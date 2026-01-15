@@ -11,6 +11,7 @@ import ida_bytes
 import ida_entry
 import idautils
 import idc
+import ida_auto
 
 def get_idb_directory():
     """获取 IDB 文件所在目录"""
@@ -296,9 +297,16 @@ def main():
     else:
         has_hexrays = True
         print("[+] Hex-Rays decompiler initialized")
-    
-    idb_dir = get_idb_directory()
-    export_dir = os.path.join(idb_dir, "export-for-ai")
+
+    ida_auto.auto_wait()
+
+    # Example usage: idat -S"INP.py <export_dir>"
+    argc = int(idc.eval_idc("ARGV.count"))
+    if argc < 2:
+        idb_dir = get_idb_directory()
+        export_dir = os.path.join(idb_dir, "export-for-ai")
+    else:
+        export_dir = idc.eval_idc("ARGV[1]")
     ensure_dir(export_dir)
     
     print("[+] Export directory: {}".format(export_dir))
@@ -329,6 +337,8 @@ def main():
     print("[+] Export completed!")
     print("    Output directory: {}".format(export_dir))
     print("=" * 60)
+    
+    idc.qexit(0)
 
 if __name__ == "__main__":
     main()
